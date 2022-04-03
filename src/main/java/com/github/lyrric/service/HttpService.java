@@ -65,7 +65,7 @@ public class HttpService {
      * @return
      * @throws BusinessException
      */
-    public List<VaccineList> getVaccineList() throws BusinessException, IOException {
+    public List<VaccineList> getVaccineList(String regionCode) throws BusinessException, IOException {
         hasAvailableConfig();
         String path = baseUrl+"/seckill/seckill/list.do";
         Map<String, String> param = new HashMap<>();
@@ -73,7 +73,7 @@ public class HttpService {
         param.put("offset", "0");
         param.put("limit", "100");
         //这个应该是成都的行政区划前四位
-        param.put("regionCode", Config.regionCode);
+        param.put("regionCode", regionCode);
         String json = get(path, param, null);
         return JSONObject.parseArray(json).toJavaList(VaccineList.class);
     }

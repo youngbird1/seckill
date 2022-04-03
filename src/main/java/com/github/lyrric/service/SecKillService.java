@@ -101,7 +101,7 @@ public class SecKillService {
 
     }
     public List<VaccineList> getVaccines() throws IOException, BusinessException {
-        return httpService.getVaccineList();
+        return httpService.getVaccineList(Config.regionCode);
     }
     /**
      *  将时间字符串转换为时间戳
