@@ -2,6 +2,7 @@ package com.github.lyrric.service;
 
 import com.github.lyrric.conf.Config;
 import com.github.lyrric.model.BusinessException;
+import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +61,11 @@ public class SecKillRunnable implements Runnable{
                 if(e.getErrMsg().contains("没抢到")){
                     Config.success = false;
                     break;
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
             } catch (ConnectTimeoutException | SocketTimeoutException socketTimeoutException ){
                 logger.error("Thread ID: {},抢购失败: 超时了", Thread.currentThread().getId());

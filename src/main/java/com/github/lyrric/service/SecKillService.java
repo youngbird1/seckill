@@ -64,17 +64,17 @@ public class SecKillService {
             }
         }
         now = System.currentTimeMillis();
-        if(now + 500 < startDate){
+        if(now + 1000 < startDate){
             logger.info("获取st参数成功，还未到秒杀开始时间，等待中......");
             Thread.sleep(startDate - now - 500);
         }
 
         service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
-        Thread.sleep(200);
+        Thread.sleep(100);
         service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
-        Thread.sleep(200);
+        Thread.sleep(100);
         service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
-        Thread.sleep(200);
+        Thread.sleep(100);
         service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
         service.shutdown();
         //等待线程结束
