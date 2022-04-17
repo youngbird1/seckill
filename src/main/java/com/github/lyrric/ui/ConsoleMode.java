@@ -1,6 +1,7 @@
 package com.github.lyrric.ui;
 
 import com.github.lyrric.conf.Config;
+import com.github.lyrric.conf.MemberConfig;
 import com.github.lyrric.model.BusinessException;
 import com.github.lyrric.model.Member;
 import com.github.lyrric.model.VaccineList;
@@ -65,7 +66,8 @@ public class ConsoleMode {
         String startTime = vaccineList.get(no).getStartTime();
         log.info("按回车键开始秒杀：");
         sc.nextLine();
-        secKillService.startSecKill(code, startTime, null);
+        MemberConfig memberConfig = new MemberConfig();
+        secKillService.startSecKill(code, startTime, memberConfig, null);
     }
     private void calCookie(String cookie){
         String[] s = cookie.replaceAll(" ", "").split(";");

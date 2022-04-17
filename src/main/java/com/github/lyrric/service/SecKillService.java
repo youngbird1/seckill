@@ -1,12 +1,14 @@
 package com.github.lyrric.service;
 
 import com.github.lyrric.conf.Config;
+import com.github.lyrric.conf.MemberConfig;
 import com.github.lyrric.model.BusinessException;
 import com.github.lyrric.model.VaccineList;
 import com.github.lyrric.ui.MainFrame;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author wangxiaodong
  */
+@Service
 public class SecKillService {
 
     private HttpService httpService;
@@ -40,42 +43,36 @@ public class SecKillService {
      * 多线程秒杀开启
      */
     @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
-    public void startSecKill(Integer vaccineId, String startDateStr, MainFrame mainFrame) throws ParseException, InterruptedException {
+    public void startSecKill(Integer vaccineId, String startDateStr, MemberConfig memberConfig, MainFrame mainFrame) throws ParseException, InterruptedException {
         long startDate = convertDateToInt(startDateStr);
 
         long now = System.currentTimeMillis();
-        if(now + 5000 < startDate){
+        if (now + 5000 < startDate) {
             logger.info("还未到获取st时间，等待中......");
             Thread.sleep(startDate - now - 5000);
         }
-        while (true){
+        while (true) {
             //提前五秒钟获取服务器时间戳接口，计算加密用
             try {
                 logger.info("Thread ID：main，请求获取加密参数st");
                 Config.st = httpService.getSt(vaccineId.toString());
                 logger.info("Thread ID：main，成功获取加密参数st：{}", Config.st);
                 break;
-            }catch (ConnectTimeoutException  | SocketTimeoutException socketTimeoutException ){
+            } catch (ConnectTimeoutException | SocketTimeoutException socketTimeoutException) {
                 logger.error("Thread ID：main,获取st失败: 超时");
-            }catch (BusinessException e){
+            } catch (BusinessException e) {
                 logger.error("Thread ID：main,获取st失败: {}", e.getMessage());
-            }catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("Thread ID：main,获取st失败，大概率是约苗问题:{}", e.getMessage());
             }
         }
         now = System.currentTimeMillis();
-        if(now + 1000 < startDate){
+        if (now + 1000 < startDate) {
             logger.info("获取st参数成功，还未到秒杀开始时间，等待中......");
             Thread.sleep(startDate - now - 500);
         }
 
-        service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
-        Thread.sleep(100);
-        service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
-        Thread.sleep(100);
-        service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
-        Thread.sleep(100);
-        service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
+        service.submit(new SecKillRunnable(false, httpService, memberConfig));
         service.shutdown();
         //等待线程结束
         try {
@@ -91,20 +88,27 @@ public class SecKillService {
                 }
                 logger.info("抢购失败");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (mainFrame != null) {
                 mainFrame.setStartBtnEnable();
             }
         }
 
     }
+
     public List<VaccineList> getVaccines() throws IOException, BusinessException {
         return httpService.getVaccineList(Config.regionCode);
     }
+
+    public List<VaccineList> getVaccines(String regionCode) throws IOException, BusinessException {
+        return httpService.getVaccineList(regionCode);
+    }
+
     /**
-     *  将时间字符串转换为时间戳
+     * 将时间字符串转换为时间戳
+     *
      * @param dateStr yyyy-mm-dd格式
      * @return
      */

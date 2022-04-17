@@ -57,4 +57,19 @@ public class Config {
      */
     public static String st;
 
+    public static void setTk(String tk) {
+        Config.tk = tk;
+    }
+
+    public static void setCookie(String cookie) {
+        calCookie(cookie);
+    }
+
+    private static void calCookie(String cookie){
+        String[] s = cookie.replaceAll(" ", "").split(";");
+        for (String s1 : s) {
+            Config.cookie.put(s1.split("=")[0], s1);
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.github.lyrric.ui;
 
 import com.github.lyrric.conf.Config;
+import com.github.lyrric.conf.MemberConfig;
 import com.github.lyrric.model.Area;
 import com.github.lyrric.model.BusinessException;
 import com.github.lyrric.model.TableModel;
@@ -205,7 +206,7 @@ public class MainFrame extends JFrame {
                 setCookieBtn.setEnabled(false);
                 startBtn.setEnabled(false);
                 setMemberBtn.setEnabled(false);
-                service.startSecKill(id, startTime, this);
+                service.startSecKill(id, startTime, new MemberConfig(), this);
             } catch (ParseException | InterruptedException e) {
                 appendMsg("解析开始时间失败");
                 e.printStackTrace();
