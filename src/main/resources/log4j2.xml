@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="error">
 	<Properties>
-		<Property name="LOG_HOME">${sys:user.home}/secKill</Property>
+		<Property name="LOG_HOME">${sys:user.home}/sec2_Kill</Property>
 	</Properties>
 	<!--先定义所有的appender-->
 	<appenders>
