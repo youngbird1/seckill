@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="error">
 	<Properties>
-		<Property name="filename">logs/seckill.log</Property>
+		<Property name="LOG_HOME">${sys:user.home}/secKill</Property>
 	</Properties>
 	<!--先定义所有的appender-->
 	<appenders>
@@ -13,9 +13,13 @@
 			<PatternLayout pattern="%d{HH:mm:ss.SSS}  %-5level  %class{36}  %L %M ==>  %msg%xEx%n"/>
 		</Console>
 		<!--文件会打印信息 -->
-		<File name="fileLog" fileName="${filename}" append="true">
+		<RollingRandomAccessFile name="fileLog" fileName="${LOG_HOME}/seckill.log" filePattern="${LOG_HOME}/seckill.log.%d{yyyyMMdd}">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS}  %-5level  %class{36}  %L %M ==>  %msg%xEx%n"/>
-		</File>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+		</RollingRandomAccessFile>
 	</appenders>
 	<!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
 	<loggers>

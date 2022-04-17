@@ -17,6 +17,7 @@ import org.apache.http.message.BufferedHeader;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.JsonUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -147,6 +148,7 @@ public class HttpService {
         dealHeader(response);
         HttpEntity httpEntity = response.getEntity();
         String json =  EntityUtils.toString(httpEntity, StandardCharsets.UTF_8);
+        logger.info("seckill result:{}", json);
         JSONObject jsonObject = JSONObject.parseObject(json);
         if("0000".equals(jsonObject.get("code"))){
             return jsonObject.getString("data");
