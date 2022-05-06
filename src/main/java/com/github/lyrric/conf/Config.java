@@ -2,6 +2,7 @@ package com.github.lyrric.conf;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created on 2020-07-23.
@@ -56,5 +57,7 @@ public class Config {
      * 加密参数st
      */
     public static String st;
+
+    public static CountDownLatch cd = new CountDownLatch(1);
 
 }

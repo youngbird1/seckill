@@ -43,15 +43,22 @@ public class SecKillRunnable implements Runnable{
         do {
             long id = Thread.currentThread().getId();
             try {
+                String st ="";
                 //获取加密参数st
                 if(resetSt){
                     logger.info("Thread ID：{}，请求获取加密参数st", id);
-                    Config.st = httpService.getSt(vaccineId.toString());
+//                    Config.st = httpService.getSt(vaccineId.toString());
+                    st = httpService.getSt(vaccineId.toString());
                     logger.info("Thread ID：{}，成功获取加密参数st", id);
+                }
+                try {
+                    Config.cd.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 logger.info("Thread ID：{}，秒杀请求", id);
                 httpService.secKill(vaccineId.toString(), "1", Config.memberId.toString(),
-                        Config.idCard, Config.st);
+                        Config.idCard, st);
                 Config.success = true;
                 logger.info("Thread ID：{}，抢购成功", id);
                 break;
@@ -70,6 +77,11 @@ public class SecKillRunnable implements Runnable{
                 if (System.currentTimeMillis() > startDate + 1000 * 60 *10 || Config.success != null) {
                     break;
                 }
+            }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         } while (true);
     }

@@ -30,7 +30,7 @@ public class SecKillService {
 
     private final Logger logger = LogManager.getLogger(SecKillService.class);
 
-    ExecutorService service = Executors.newFixedThreadPool(4);
+    ExecutorService service = Executors.newFixedThreadPool(128);
 
     public SecKillService() {
         httpService = new HttpService();
@@ -42,7 +42,6 @@ public class SecKillService {
     @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
     public void startSecKill(Integer vaccineId, String startDateStr, MainFrame mainFrame) throws ParseException, InterruptedException {
         long startDate = convertDateToInt(startDateStr);
-
         long now = System.currentTimeMillis();
         if(now + 5000 < startDate){
             logger.info("还未到获取st时间，等待中......");
@@ -63,19 +62,22 @@ public class SecKillService {
                 logger.error("Thread ID：main,获取st失败，大概率是约苗问题:{}", e.getMessage());
             }
         }
-        now = System.currentTimeMillis();
-        if(now + 500 < startDate){
-            logger.info("获取st参数成功，还未到秒杀开始时间，等待中......");
-            Thread.sleep(startDate - now - 500);
+        for (int i = 0; i < 5; i++) {
+            service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
         }
-
-        service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
-        Thread.sleep(200);
-        service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
-        Thread.sleep(200);
-        service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
-        Thread.sleep(200);
-        service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
+        now = System.currentTimeMillis();
+        if(now + 1000 < startDate){
+            logger.info("获取st参数成功，还未到秒杀开始时间，等待中......");
+            Thread.sleep(startDate - now - 1000);
+        }
+        Config.cd.countDown();
+//        service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
+//        Thread.sleep(200);
+//        service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
+//        Thread.sleep(200);
+//        service.submit(new SecKillRunnable(true, httpService, vaccineId, startDate));
+//        Thread.sleep(200);
+//        service.submit(new SecKillRunnable(false, httpService, vaccineId, startDate));
         service.shutdown();
         //等待线程结束
         try {
